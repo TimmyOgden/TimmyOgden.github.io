@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Timothy Ogden — Senior Full Stack &amp; AI/ML Engineer</title>
+  <meta name="description" content="Timothy Ogden — Senior Full Stack & AI/ML Engineer, London, UK. 12+ years building scalable, data-driven applications and LLM-powered systems." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+
+  <!-- Loading screen shown until the Three.js scene and fonts are ready -->
+  <div id="loader" aria-hidden="true">
+    <div class="loader-inner">
+      <span class="loader-mark">T.O</span>
+      <div class="loader-bar-track">
+        <div class="loader-bar-fill" id="loader-bar-fill"></div>
+      </div>
+      <span class="loader-pct" id="loader-pct">0%</span>
+    </div>
+  </div>
+
+  <!-- Fixed full-viewport WebGL background, sits behind all content -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Separate canvas/renderer for the flying ships & critters (see
+       src/three/critters.js) — deliberately not part of bg-canvas's scene
+       so it can sit above the page content without going through the main
+       scene's bloom pass, which doesn't preserve transparency. -->
+  <canvas id="critter-canvas"></canvas>
+
+  <!-- Minimal fixed nav -->
+  <nav class="site-nav" id="site-nav">
+    <a class="site-nav__mark" href="#hero">T.O</a>
+    <ul class="site-nav__links">
+      <li><a href="#summary" data-nav="summary">Profile</a></li>
+      <li><a href="#skills" data-nav="skills">Skills</a></li>
+      <li><a href="#experience" data-nav="experience">Experience</a></li>
+      <li><a href="#education" data-nav="education">Education</a></li>
+      <li><a href="#beyond" data-nav="beyond">Beyond</a></li>
+      <li><a href="#contact" data-nav="contact">Contact</a></li>
+    </ul>
+    <div class="site-nav__progress" aria-hidden="true">
+      <div class="site-nav__progress-fill" id="scroll-progress-fill"></div>
+    </div>
+  </nav>
+
+  <!-- Mobile/tablet only: an invisible tap target sitting over the real
+       WebGL orb's docked corner position (see scene.js), scrolling back to
+       the hero when tapped. The reserved gutter in style.css keeps every
+       card from ever rendering over that corner, so what's visible there
+       is always the actual faceted mesh, not a stand-in graphic. -->
+  <button class="orb-dock" id="orb-dock" aria-label="Scroll back to top"></button>
+
+  <main id="content">
+
+    <!-- 1. Hero -->
+    <section class="panel panel--hero" id="hero" data-section="hero">
+      <div class="panel__inner">
+        <h1 class="headline">Timothy<br/>Ogden</h1>
+        <p class="subhead">Senior Full Stack &amp; AI/ML Engineer</p>
+        <p class="location">London, United Kingdom</p>
+      </div>
+      <div class="scroll-cue" aria-hidden="true">
+        <span>Scroll</span>
+        <div class="scroll-cue__line"></div>
+      </div>
+    </section>
+
+    <!-- 2. Summary -->
+    <section class="panel panel--summary" id="summary" data-section="summary">
+      <div class="panel__inner">
+        <p class="eyebrow">01 — Profile</p>
+        <h2 class="theme-word">Build.</h2>
+        <p class="body-text">
+          Full stack and AI/ML engineer with 12+ years of experience designing and delivering
+          scalable, data-driven applications across finance, education, and consumer platforms.
+          Specialises in secure APIs, integrating machine learning and LLM-powered features
+          &mdash; RAG pipelines, forecasting models, predictive analytics &mdash; into production
+          systems, and leading development teams through the full software lifecycle.
+        </p>
+      </div>
+    </section>
+
+    <!-- 3. Core Skills -->
+    <section class="panel panel--skills" id="skills" data-section="skills">
+      <div class="panel__inner panel__inner--wide">
+        <p class="eyebrow">02 — Core Skills</p>
+        <h2 class="theme-word">Stack.</h2>
+        <div class="skills-grid">
+          <div class="skill-cluster">
+            <h3>AI / Data Science</h3>
+            <ul class="chip-row">
+              <li class="chip">PyTorch</li><li class="chip">Pandas</li><li class="chip">NumPy</li><li class="chip">Scikit-learn</li>
+              <li class="chip">LangChain</li><li class="chip">FAISS / Chroma</li><li class="chip">Statistical Modelling</li><li class="chip">LLM Integration</li>
+            </ul>
+          </div>
+          <div class="skill-cluster">
+            <h3>Front-End</h3>
+            <ul class="chip-row">
+              <li class="chip">React / Next.js</li><li class="chip">Vue / Nuxt</li><li class="chip">Angular</li><li class="chip">Quasar</li>
+              <li class="chip">TypeScript</li><li class="chip">Tailwind</li><li class="chip">Bootstrap</li>
+            </ul>
+          </div>
+          <div class="skill-cluster">
+            <h3>Back-End</h3>
+            <ul class="chip-row">
+              <li class="chip">FastAPI</li><li class="chip">ASP.NET Core</li><li class="chip">Node.js / NestJS</li><li class="chip">Java Spring</li>
+              <li class="chip">Django</li><li class="chip">Ruby on Rails</li><li class="chip">Laravel</li><li class="chip">Go</li>
+            </ul>
+          </div>
+          <div class="skill-cluster">
+            <h3>Cloud &amp; DevOps</h3>
+            <ul class="chip-row">
+              <li class="chip">AWS</li><li class="chip">Azure</li><li class="chip">Google Cloud</li><li class="chip">GitHub Actions</li>
+              <li class="chip">GitLab CI</li><li class="chip">Jenkins</li><li class="chip">Docker</li>
+            </ul>
+          </div>
+          <div class="skill-cluster">
+            <h3>Databases</h3>
+            <ul class="chip-row">
+              <li class="chip">PostgreSQL</li><li class="chip">MySQL</li><li class="chip">MongoDB</li><li class="chip">SQL Server</li>
+            </ul>
+          </div>
+          <div class="skill-cluster">
+            <h3>Mobile</h3>
+            <ul class="chip-row">
+              <li class="chip">React Native</li><li class="chip">Flutter</li><li class="chip">Swift</li>
+            </ul>
+          </div>
+          <div class="skill-cluster">
+            <h3>Testing</h3>
+            <ul class="chip-row">
+              <li class="chip">Playwright</li><li class="chip">Cypress</li><li class="chip">Babel</li><li class="chip">Jest</li>
+            </ul>
+          </div>
+          <div class="skill-cluster">
+            <h3>Other</h3>
+            <ul class="chip-row">
+              <li class="chip">C / C++</li><li class="chip">C#</li><li class="chip">Java</li><li class="chip">Python</li><li class="chip">Rust</li><li class="chip">Network &amp; PC Config</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Experience -->
+    <section class="panel panel--experience" id="experience" data-section="experience">
+      <div class="panel__inner panel__inner--wide">
+        <p class="eyebrow">03 — Experience</p>
+        <h2 class="theme-word">Ship.</h2>
+        <ol class="timeline">
+          <li class="timeline__item">
+            <div class="timeline__meta">
+              <span class="timeline__dates">Dec 2025 &ndash; Nov 2026</span>
+              <h3>Web Developer</h3>
+              <p class="timeline__org">Outernet Global Limited</p>
+            </div>
+            <p class="timeline__detail">
+              Built a bespoke internal ops platform (React/TypeScript + Node.js); integrated HiBob,
+              Xero and Microsoft Entra ID; used MCP to connect internal data to an on-prem Ollama
+              LLM for AI-assisted workflows.
+            </p>
+          </li>
+          <li class="timeline__item">
+            <div class="timeline__meta">
+              <span class="timeline__dates">Feb 2025 &ndash; Nov 2025</span>
+              <h3>Senior Full Stack Developer</h3>
+              <p class="timeline__org">Independent / Self-Employed</p>
+            </div>
+            <p class="timeline__detail">
+              Built ML forecasting models (time series, regression, XGBoost) improving forecast
+              accuracy by <strong>30%</strong>; built RAG pipelines with LangChain + FAISS/Chroma
+              improving retrieval accuracy by <strong>40%</strong>; built secure APIs with ASP.NET
+              Core; delivered a compensation dashboard cutting manual finance effort by
+              <strong>60%</strong>.
+            </p>
+          </li>
+          <li class="timeline__item">
+            <div class="timeline__meta">
+              <span class="timeline__dates">Jan 2023 &ndash; Jan 2025</span>
+              <h3>Project Manager / Full Stack Developer</h3>
+              <p class="timeline__org">SBCS &middot; Trinidad &amp; Tobago</p>
+            </div>
+            <p class="timeline__detail">
+              Built a VR monitoring dashboard in React; led a team of 5, improving sprint velocity
+              by <strong>20%</strong>; owned a project end-to-end including budget and marketing.
+            </p>
+          </li>
+          <li class="timeline__item">
+            <div class="timeline__meta">
+              <span class="timeline__dates">Oct 2021 &ndash; Jan 2023</span>
+              <h3>Head of IT</h3>
+              <p class="timeline__org">Mentor Education &middot; London</p>
+            </div>
+            <p class="timeline__detail">
+              Cut load times <strong>40%</strong> via Next.js/Webpack optimisation; built RESTful
+              APIs (FastAPI, Java Spring) hitting <strong>99.95%</strong> uptime; lifted engagement
+              <strong>25%</strong> via analytics-driven UX; raised test coverage to
+              <strong>90%</strong> with Playwright.
+            </p>
+          </li>
+          <li class="timeline__item">
+            <div class="timeline__meta">
+              <span class="timeline__dates">Mar 2021 &ndash; Oct 2021</span>
+              <h3>Full Stack Developer</h3>
+              <p class="timeline__org">Provide CIC &middot; Colchester</p>
+            </div>
+            <p class="timeline__detail">
+              Architected two client sites (ASP.NET/Angular), <strong>4.8/5</strong> client
+              satisfaction; built 5 custom workflows saving 8 hrs/week; brought two client sites
+              to SOC 2 compliance.
+            </p>
+          </li>
+          <li class="timeline__item">
+            <div class="timeline__meta">
+              <span class="timeline__dates">Aug 2020 &ndash; Oct 2020</span>
+              <h3>Web and Mobile Application Developer</h3>
+              <p class="timeline__org">Granite 5 Ltd</p>
+            </div>
+            <p class="timeline__detail">
+              Built an internal staff dashboard (Java Spring, React/Next.js, Firebase); hit
+              <strong>95/100</strong> Google PageSpeed score.
+            </p>
+          </li>
+          <li class="timeline__item">
+            <div class="timeline__meta">
+              <span class="timeline__dates">Apr 2019 &ndash; Aug 2020</span>
+              <h3>Web and Mobile Application Developer</h3>
+              <p class="timeline__org">Vanarama</p>
+            </div>
+            <p class="timeline__detail">
+              Built mobile solutions (NestJS + React Native), <strong>40%</strong> faster
+              deployment; delivered e-commerce sites (WordPress, Magento, PrestaShop); built a
+              real-time financial analytics tool integrating the Interactive Brokers API.
+            </p>
+          </li>
+          <li class="timeline__item">
+            <div class="timeline__meta">
+              <span class="timeline__dates">Apr 2017 &ndash; Aug 2019</span>
+              <h3>Web Developer</h3>
+              <p class="timeline__org">Sharp-aX</p>
+            </div>
+            <p class="timeline__detail">
+              Implemented CI/CD with GitHub Actions + Docker, cutting deployment time
+              <strong>50%</strong>, <strong>99%</strong> uptime; raised test coverage to
+              <strong>90%</strong>.
+            </p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 5. Education & Certifications -->
+    <section class="panel panel--education" id="education" data-section="education">
+      <div class="panel__inner">
+        <p class="eyebrow">04 — Education</p>
+        <h2 class="theme-word">Learn.</h2>
+        <ul class="edu-list">
+          <li>
+            <h3>BSc Information Technology Practitioners</h3>
+            <p>Coventry University, 2014&ndash;2017 (incl. HND &amp; HNC)</p>
+          </li>
+          <li>
+            <h3>CompTIA Cybersecurity Analyst (CySA+)</h3>
+          </li>
+          <li>
+            <h3>CompTIA A+</h3>
+            <p>June 2023</p>
+          </li>
+          <li>
+            <h3>Microsoft Technology Associate: Networking Fundamentals</h3>
+            <p>September 2015</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. Beyond Work -->
+    <section class="panel panel--beyond" id="beyond" data-section="beyond">
+      <div class="panel__inner">
+        <p class="eyebrow">05 — Beyond Work</p>
+        <h2 class="theme-word">Explore.</h2>
+        <p class="body-text">
+          AI model training and generative workflows &mdash; Kohya SS for LoRA and model
+          training, ComfyUI for Stable Diffusion pipelines.
+        </p>
+      </div>
+    </section>
+
+    <!-- 7. Contact -->
+    <section class="panel panel--contact" id="contact" data-section="contact">
+      <div class="panel__inner">
+        <p class="eyebrow">06 — Contact</p>
+        <h2 class="theme-word">Talk.</h2>
+        <div class="contact-links">
+          <a href="mailto:Timothyogden12@gmail.com">Timothyogden12@gmail.com</a>
+          <a href="tel:+447308988896">+44 7308 988896</a>
+          <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        </div>
+      </div>
+      <footer class="site-footer">
+        <span>&copy; 2026 Timothy Ogden</span>
+      </footer>
+    </section>
+
+  </main>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
