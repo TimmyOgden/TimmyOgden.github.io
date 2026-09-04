@@ -51,6 +51,66 @@ function addEyes(group, color, { spacing = 0.08, size = 0.04, z = -0.15, y = 0.0
   });
 }
 
+// --- "Sad trombone" explosion sound -----------------------------------
+// Synthesized via Web Audio rather than an audio file — no external asset
+// to license/host for a one-off comedic sting this small, and it's a
+// handful of lines either way.
+
+let audioCtx = null;
+
+function getAudioContext() {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx) return null;
+  if (!audioCtx) audioCtx = new Ctx();
+  // Browsers start contexts suspended until a user gesture; this is
+  // always called from a click handler, so resuming here is safe.
+  if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+  return audioCtx;
+}
+
+/** Classic descending "wah-wah-wah-waaah" — four notes, each with a
+ * slight downward pitch bend, the last one held and bent further for
+ * the comedic "sad" finish. */
+function playSadTrombone() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  const notes = [
+    { freq: 392.0, start: 0, duration: 0.22 }, // G4
+    { freq: 369.99, start: 0.22, duration: 0.22 }, // F#4
+    { freq: 349.23, start: 0.44, duration: 0.22 }, // F4
+    { freq: 329.63, start: 0.66, duration: 0.6 }, // E4, held + bent for the "waaah"
+  ];
+
+  const master = ctx.createGain();
+  master.gain.value = 0.14;
+  master.connect(ctx.destination);
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 1100;
+  filter.connect(master);
+
+  notes.forEach(({ freq, start, duration }) => {
+    const osc = ctx.createOscillator();
+    osc.type = 'triangle';
+    const t0 = ctx.currentTime + start;
+    osc.frequency.setValueAtTime(freq, t0);
+    osc.frequency.linearRampToValueAtTime(freq * 0.92, t0 + duration);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, t0);
+    gain.gain.linearRampToValueAtTime(1, t0 + 0.03);
+    gain.gain.setValueAtTime(1, t0 + duration - 0.08);
+    gain.gain.linearRampToValueAtTime(0, t0 + duration);
+
+    osc.connect(gain);
+    gain.connect(filter);
+    osc.start(t0);
+    osc.stop(t0 + duration + 0.02);
+  });
+}
+
 // --- Ship archetypes (forward = -Z) ---------------------------------------
 
 function buildSaucer(color, accent) {
@@ -527,6 +587,7 @@ export class CritterField {
   _explode(c) {
     c.flying = false;
     c.mesh.visible = false;
+    playSadTrombone();
 
     const origin = new THREE.Vector3();
     c.mesh.getWorldPosition(origin);
