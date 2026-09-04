@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="55%" stop-color="#17f3ff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#17f3ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="32" cy="32" r="31" fill="url(#glow)"/>
+  <path d="M32,32 L32.00,4.00 L50.38,13.62 Z" fill="#ff2ec4" stroke="#07030f" stroke-width="0.6" stroke-linejoin="round"/>
+  <path d="M32,32 L50.38,13.62 L60.50,32.00 Z" fill="#17f3ff" stroke="#07030f" stroke-width="0.6" stroke-linejoin="round"/>
+  <path d="M32,32 L60.50,32.00 L50.38,50.38 Z" fill="#ff2ec4" stroke="#07030f" stroke-width="0.6" stroke-linejoin="round"/>
+  <path d="M32,32 L50.38,50.38 L32.00,60.00 Z" fill="#17f3ff" stroke="#07030f" stroke-width="0.6" stroke-linejoin="round"/>
+  <path d="M32,32 L32.00,60.00 L13.97,50.03 Z" fill="#e066ff" stroke="#07030f" stroke-width="0.6" stroke-linejoin="round"/>
+  <path d="M32,32 L13.97,50.03 L4.00,32.00 Z" fill="#17f3ff" stroke="#07030f" stroke-width="0.6" stroke-linejoin="round"/>
+  <path d="M32,32 L4.00,32.00 L13.62,13.62 Z" fill="#ff2ec4" stroke="#07030f" stroke-width="0.6" stroke-linejoin="round"/>
+  <path d="M32,32 L13.62,13.62 L32.00,4.00 Z" fill="#17f3ff" stroke="#07030f" stroke-width="0.6" stroke-linejoin="round"/>
+  
+  <circle cx="32" cy="32" r="29" fill="none" stroke="#17f3ff" stroke-width="1.2" stroke-opacity="0.9"/>
+</svg>
