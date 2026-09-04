@@ -2,6 +2,7 @@ import './style.css';
 import { BackgroundScene } from './three/scene.js';
 import { CritterField, CRITTERS_ENABLED } from './three/critters.js';
 import { initScrollAnimations } from './scroll/scrollController.js';
+import { initConsent } from './consent.js';
 
 const loader = document.getElementById('loader');
 const barFill = document.getElementById('loader-bar-fill');
@@ -71,6 +72,7 @@ async function bootstrap() {
 
   initScrollAnimations(scene);
   initSmoothNavLinks();
+  initConsent();
 
   if (scene) scene.start();
   if (critters) critters.start();

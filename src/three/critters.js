@@ -320,6 +320,70 @@ function buildCrab(color, accent) {
   return group;
 }
 
+function buildCruiser(color, accent) {
+  const group = new THREE.Group();
+  const segments = [
+    { size: [0.22, 0.16, 0.22], z: 0.2 },
+    { size: [0.18, 0.14, 0.24], z: -0.06 },
+    { size: [0.13, 0.11, 0.22], z: -0.3 },
+  ];
+  segments.forEach(({ size, z }) => {
+    const seg = new THREE.Mesh(new THREE.BoxGeometry(...size), solidMat(color));
+    seg.position.z = z;
+    edged(seg, accent, 0.7);
+    group.add(seg);
+  });
+  const fin = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.16, 0.18), solidMat(accent));
+  fin.position.set(0, 0.13, 0.2);
+  group.add(fin);
+  return group;
+}
+
+function buildStealth(color, accent) {
+  const group = new THREE.Group();
+  const wingGeo = new THREE.ConeGeometry(0.42, 0.62, 4).rotateX(Math.PI / 2).rotateY(Math.PI / 4);
+  const body = new THREE.Mesh(wingGeo, solidMat(color));
+  body.scale.set(1, 0.12, 1);
+  edged(body, accent, 0.75);
+  group.add(body);
+  const cockpit = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 8), solidMat(accent));
+  cockpit.position.set(0, 0.05, -0.1);
+  group.add(cockpit);
+  return group;
+}
+
+function buildSpiderBot(color, accent) {
+  const group = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 10), solidMat(color));
+  edged(body, accent, 0.65);
+  group.add(body);
+  const legGeo = new THREE.CylinderGeometry(0.01, 0.01, 0.22, 4);
+  for (let i = 0; i < 6; i++) {
+    const angle = (i / 6) * Math.PI * 2;
+    const leg = new THREE.Mesh(legGeo, solidMat(accent));
+    leg.position.set(Math.cos(angle) * 0.16, -0.05, Math.sin(angle) * 0.16 - 0.02);
+    leg.rotation.z = Math.cos(angle) * 0.7;
+    leg.rotation.x = Math.sin(angle) * 0.7 + 0.3;
+    group.add(leg);
+  }
+  addEyes(group, 0xffffff, { spacing: 0.06, size: 0.03, z: -0.16 });
+  return group;
+}
+
+function buildEyeball(color, accent) {
+  const group = new THREE.Group();
+  const eye = new THREE.Mesh(new THREE.SphereGeometry(0.24, 16, 12), solidMat(0xffffff, 0.95));
+  edged(eye, accent, 0.5);
+  group.add(eye);
+  const iris = new THREE.Mesh(new THREE.SphereGeometry(0.1, 12, 10), solidMat(color, 1));
+  iris.position.z = -0.2;
+  group.add(iris);
+  const pupil = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 8), solidMat(0x07030f, 1));
+  pupil.position.z = -0.27;
+  group.add(pupil);
+  return group;
+}
+
 const SHIP_BUILDERS = [
   buildSaucer,
   buildRocket,
@@ -329,8 +393,20 @@ const SHIP_BUILDERS = [
   buildShuttle,
   buildInterceptor,
   buildProbe,
+  buildCruiser,
+  buildStealth,
 ];
-const CHARACTER_BUILDERS = [buildBlob, buildRobot, buildGhost, buildCreature, buildTallAlien, buildJelly, buildCrab];
+const CHARACTER_BUILDERS = [
+  buildBlob,
+  buildRobot,
+  buildGhost,
+  buildCreature,
+  buildTallAlien,
+  buildJelly,
+  buildCrab,
+  buildSpiderBot,
+  buildEyeball,
+];
 
 export class CritterField {
   constructor(canvas, colorA, colorB) {
@@ -360,7 +436,7 @@ export class CritterField {
     CHARACTER_BUILDERS.forEach((build, i) => {
       configs.push({ build, color: palette[(i + 1) % 2], accent: palette[i % 2] });
     });
-    // SHIP_BUILDERS x2 colour variants (16) + CHARACTER_BUILDERS (7) = 23.
+    // SHIP_BUILDERS x2 colour variants (20) + CHARACTER_BUILDERS (9) = 29.
 
     this.critters = configs.map(({ build, color, accent }) => {
       const mesh = build(color, accent);
@@ -388,11 +464,20 @@ export class CritterField {
 
     // Launch the first one a few seconds in rather than instantly on load.
     this.sinceLastSpawn = 6;
-    this.spawnInterval = 10;
-    // More concurrent slots than before since spawns are twice as frequent
-    // now (every 10s vs 20s) with a similar ~7-12s flight duration. Trimmed
-    // on low-power/mobile devices to keep the draw-call count low there.
-    this.maxConcurrent = isLowPower ? 2 : 4;
+
+    // The longer someone stays on the page, the busier the sky gets: spawn
+    // interval shrinks and the concurrent-flight cap rises, both eased over
+    // RAMP_DURATION seconds of real time spent on the page, then holding at
+    // the capped/dense end state. See _rampedParams(), called every frame.
+    this.sessionElapsed = 0;
+    this.RAMP_DURATION = 150;
+    this.spawnIntervalStart = 10;
+    this.spawnIntervalMin = isLowPower ? 6 : 3.5;
+    this.maxConcurrentStart = isLowPower ? 2 : 4;
+    this.maxConcurrentCap = isLowPower ? 5 : 10;
+
+    this.spawnInterval = this.spawnIntervalStart;
+    this.maxConcurrent = this.maxConcurrentStart;
 
     this._onResize = this._onResize.bind(this);
     this._onClick = this._onClick.bind(this);
@@ -561,6 +646,16 @@ export class CritterField {
   }
 
   _updateCritters(delta) {
+    this.sessionElapsed += delta;
+    const rampT = Math.min(1, this.sessionElapsed / this.RAMP_DURATION);
+    // Ease out so density ramps up quickly at first and levels off, rather
+    // than a linear climb that keeps feeling like it's still "building".
+    const eased = 1 - (1 - rampT) * (1 - rampT);
+    this.spawnInterval = THREE.MathUtils.lerp(this.spawnIntervalStart, this.spawnIntervalMin, eased);
+    this.maxConcurrent = Math.round(
+      THREE.MathUtils.lerp(this.maxConcurrentStart, this.maxConcurrentCap, eased)
+    );
+
     this.sinceLastSpawn += delta;
     if (this.sinceLastSpawn >= this.spawnInterval) {
       const flyingCount = this.critters.filter((c) => c.flying).length;

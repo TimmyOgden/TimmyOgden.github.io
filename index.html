@@ -3,15 +3,24 @@
 <head>
   <meta charset="UTF-8" />
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LE7C8YKYJQ"></script>
+  <!-- Google tag (gtag.js) — consent-gated: defaults to denied and only
+       switches to granted once the cookie bar is accepted (see
+       src/consent.js), or immediately on future visits if already
+       accepted. Consent default MUST be set before gtag.js itself loads,
+       per Google's Consent Mode docs, so this stays inline and ahead of
+       the async script tag rather than living in the bundled JS. -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
+    let storedConsent = null;
+    try { storedConsent = localStorage.getItem('cookie-consent'); } catch (e) {}
+    gtag('consent', 'default', {
+      analytics_storage: storedConsent === 'granted' ? 'granted' : 'denied',
+    });
     gtag('js', new Date());
-
     gtag('config', 'G-LE7C8YKYJQ');
   </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LE7C8YKYJQ"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Timothy Ogden — Senior Full Stack &amp; AI/ML Engineer</title>
@@ -325,6 +334,20 @@
     </section>
 
   </main>
+
+  <!-- Cookie consent bar — see src/consent.js. Hidden by default; shown by
+       JS only when no prior choice is stored, so there's never a flash of
+       it on repeat visits (unlike CSS-only show/hide toggled post-load). -->
+  <div class="cookie-bar" id="cookie-bar" hidden>
+    <p class="cookie-bar__text">
+      This site uses cookies for basic analytics (Google Analytics) to help me understand
+      how the site's used. No ads, no third-party selling.
+    </p>
+    <div class="cookie-bar__actions">
+      <button class="cookie-bar__btn cookie-bar__btn--ghost" id="cookie-decline" type="button">Decline</button>
+      <button class="cookie-bar__btn cookie-bar__btn--accent" id="cookie-accept" type="button">Accept</button>
+    </div>
+  </div>
 
   <script type="module" src="/src/main.js"></script>
 </body>

@@ -556,6 +556,97 @@ main#content {
 }
 
 /* ---------------------------------------------------------------------
+   Cookie consent bar
+--------------------------------------------------------------------- */
+.cookie-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 400; /* above everything else — nav (100), critters (50), orb-dock (300) */
+  width: min(560px, calc(100vw - 2.5rem));
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem 1.4rem;
+  background: rgba(10, 6, 20, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(255, 46, 196, 0.1);
+  opacity: 0;
+  transform: translate(-50%, 16px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none;
+}
+
+.cookie-bar.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+
+.cookie-bar__text {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--fg-dim);
+}
+
+.cookie-bar__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.cookie-bar__btn {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.cookie-bar__btn--ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg-faint);
+}
+
+.cookie-bar__btn--ghost:hover {
+  color: var(--fg-dim);
+  border-color: var(--fg-faint);
+}
+
+.cookie-bar__btn--accent {
+  background: rgba(23, 243, 255, 0.1);
+  border: 1px solid rgba(23, 243, 255, 0.4);
+  color: var(--fg);
+}
+
+.cookie-bar__btn--accent:hover {
+  border-color: var(--accent-2);
+  box-shadow: 0 0 14px rgba(23, 243, 255, 0.45);
+}
+
+@media (max-width: 520px) {
+  .cookie-bar {
+    bottom: 0.75rem;
+  }
+
+  .cookie-bar__actions {
+    justify-content: stretch;
+  }
+
+  .cookie-bar__btn {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+/* ---------------------------------------------------------------------
    Reduced motion / low power
 --------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
